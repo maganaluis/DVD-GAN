@@ -17,7 +17,7 @@ python3 utils/n_frames_ucf101_hmdb51.py $VIDEO_PATH
 
 # using only one class
 echo "using only one class: PlayingViolin"
-mv $ANNO_PATH/classInd.txt $ANNO_PATH/classInd.txt.bak
+mv $ANNO_PATH/classInd.txt $ANNO_PATH/classIndBackup.txt
 echo "1 PlayingViolin" >> $ANNO_PATH/classInd.txt
 
 python3 utils/ucf101_json.py $ANNO_PATH

@@ -3,19 +3,7 @@
 DATASET_PATH=$2
 
 if [[ $1 == "local" ]]; then
-  var="python3.6 main.py --adv_loss hinge --parallel True --gpus 0 1 --num_workers 8 \
-  --use_tensorboard True --ds_chn 32 --dt_chn 32 --g_chn 32 --n_frames 8 --k_sample 4 --batch_size 32 \
-  --g_lr 5e-4 \
-  --d_lr 5e-5 \
-  --n_class 1 \
-  --lr_schr const \
-  --n_class 2
-  --root_path /home/haolin/Dataset/UCF101 \
-  --annotation_path annotation/ucf101_01.json \
-  --log_path /home/haolin/Documents/outputs/logs \
-  --model_save_path /home/haolin/Documents/outputs/models \
-  --sample_path /home/haolin/Documents/outputs/samples \
-  "
+  var="python main.py --adv_loss hinge --gpus 0 --n_class 5 --num_workers 24 --use_tensorboard True --n_frames 12 --k_sample 4 --batch_size 16 --root_path /home/luis/DVD-GAN-DATASET --annotation_path /home/luis/DVD-GAN-DATASET/annotations/ucf101_01.json"
   echo $var
   exec $var
 

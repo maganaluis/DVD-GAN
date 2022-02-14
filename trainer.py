@@ -194,7 +194,7 @@ class Trainer(object):
 
         fixed_z = torch.randn(self.test_batch_size * self.n_class, self.z_dim).to(self.device)
         # fixed_label = torch.randint(low=0, high=self.n_class, size=(self.test_batch_size, )).to(self.device)
-        fixed_label = torch.tensor([i for i in range(self.n_class) for j in range(self.test_batch_size)])
+        fixed_label = torch.tensor([i for i in range(self.n_class) for j in range(self.test_batch_size)]).to(self.device)
 
         # Start with trained model
         if self.pretrained_model:
@@ -203,6 +203,7 @@ class Trainer(object):
             start = 1
 
         # Start time
+        print("Model will save at step ", self.model_save_step)
         print("=" * 30, "\nStart training...")
         start_time = time.time()
 
@@ -319,6 +320,16 @@ class Trainer(object):
                     write_log(self.writer, log_str, step, ds_loss_real, ds_loss_fake, ds_loss, dt_loss_real, dt_loss_fake, dt_loss, g_loss)
                 print(log_str)
 
+            # Save model
+            if step % self.model_save_step == 0:
+                print("Saving the model to ", self.model_save_path)
+                torch.save(self.G.state_dict(),
+                           os.path.join(self.model_save_path, '{}_G.pth'.format(step)))
+                torch.save(self.D_s.state_dict(),
+                           os.path.join(self.model_save_path, '{}_Ds.pth'.format(step)))
+                torch.save(self.D_t.state_dict(),
+                           os.path.join(self.model_save_path, '{}_Dt.pth'.format(step)))
+
             # Sample images
             if step % self.sample_step == 0:
                 self.G.eval()
@@ -330,17 +341,8 @@ class Trainer(object):
                             self.writer.add_image("Class_%d_No.%d/Step_%d" % (i, j, step), make_grid(denorm(fake_videos[i * self.test_batch_size + j].data)), step)
                         else:
                             save_image(denorm(fake_videos[i * self.test_batch_size + j].data), os.path.join(self.sample_path, "Class_%d_No.%d_Step_%d" % (i, j, step)))
-                # print('Saved sample images {}_fake.png'.format(step))
+                print('Saved sample images {}_fake.png'.format(step))
                 self.G.train()
-
-            # Save model
-            if step % self.model_save_step == 0:
-                torch.save(self.G.state_dict(),
-                           os.path.join(self.model_save_path, '{}_G.pth'.format(step)))
-                torch.save(self.D_s.state_dict(),
-                           os.path.join(self.model_save_path, '{}_Ds.pth'.format(step)))
-                torch.save(self.D_t.state_dict(),
-                           os.path.join(self.model_save_path, '{}_Dt.pth'.format(step)))
 
     def build_model(self):
 
